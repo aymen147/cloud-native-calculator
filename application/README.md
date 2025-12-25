@@ -17,3 +17,15 @@ curl.exe -X POST http://localhost:5000/api/operation -H "Content-Type: applicati
   "result": 15.0,
   "status": "completed"
 }
+
+## Open Redis db 
+docker run -p 6379:6379 --name myredis --rm redis
+
+## Verifier Redis db Setter
+docker exec -it myredis redis-cli
+127.0.0.1:6379> KEYS *
+1) "docker:test"
+2) "result:id"
+3) "operation:id"
+
+
