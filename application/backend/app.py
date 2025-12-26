@@ -3,8 +3,12 @@ import uuid
 import redis
 import json
 import pika
+from flask_cors import CORS  # ← AJOUTE CETTE LIGNE
+
 
 app = Flask(__name__)
+CORS(app)  # ← AJOUTE CETTE LIGNE pour autoriser toutes les origines
+
 
 # Connexion à Redis
 try:
