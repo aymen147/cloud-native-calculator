@@ -28,4 +28,24 @@ docker exec -it myredis redis-cli
 2) "result:id"
 3) "operation:id"
 
+## Lancer RabbitMQ avec Docker
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
+
+**Explication :**
+- `-p 5672:5672` : Port pour les messages (communication)
+- `-p 15672:15672` : Port pour l'interface web (monitoring)
+- `rabbitmq:3.12-management` : Version avec interface de gestion
+
+### 📖 Qu'est-ce que le Consumer ?
+Le Consumer est un programme séparé qui :
+
+Écoute RabbitMQ en permanence
+Récupère les messages de calcul
+Effectue les calculs
+Stocke les résultats dans Redis
+
+
+
+
+
 

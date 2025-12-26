@@ -2,26 +2,43 @@ from flask import Flask, request, jsonify
 import uuid
 import redis
 import json
+import pika
 
 app = Flask(__name__)
 
 # Connexion à Redis
 try:
     r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
-    r.ping()  # Test de connexion
+    r.ping()
     print("✅ Connecté à Redis")
 except redis.ConnectionError:
     print("❌ Erreur: Redis n'est pas accessible")
     r = None
 
+# Connexion à RabbitMQ
+def get_rabbitmq_connection():
+    """Crée une connexion à RabbitMQ"""
+    try:
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters('localhost', heartbeat=600)
+        )
+        channel = connection.channel()
+        # Déclare la file d'attente
+        channel.queue_declare(queue='calculations', durable=True)
+        print("✅ Connecté à RabbitMQ")
+        return connection, channel
+    except Exception as e:
+        print(f"❌ Erreur connexion RabbitMQ: {e}")
+        return None, None
+
 @app.route('/')
 def home():
     return jsonify({
-        "message": "Calculator API with Redis",
-        "version": "2.0",
+        "message": "Calculator API with Redis & RabbitMQ",
+        "version": "3.0",
         "redis_status": "connected" if r else "disconnected",
         "endpoints": {
-            "POST /api/operation": "Submit a calculation",
+            "POST /api/operation": "Submit a calculation (async)",
             "GET /api/result/<id>": "Get calculation result",
             "GET /api/operations": "List all operations"
         }
@@ -30,8 +47,8 @@ def home():
 @app.route('/api/operation', methods=['POST'])
 def create_operation():
     """
-    Reçoit une opération à calculer
-    Exemple: {"operator": "+", "operand1": 5, "operand2": 3}
+    Reçoit une opération et l'envoie dans RabbitMQ
+    (Ne calcule PLUS directement !)
     """
     if not r:
         return jsonify({"error": "Redis not available"}), 503
@@ -54,7 +71,7 @@ def create_operation():
         # Génération d'un ID unique
         operation_id = str(uuid.uuid4())
         
-        # Stockage de l'opération dans Redis
+        # Stockage de l'opération dans Redis (statut: pending)
         operation_data = {
             "operator": operator,
             "operand1": operand1,
@@ -63,33 +80,37 @@ def create_operation():
         }
         r.set(f"operation:{operation_id}", json.dumps(operation_data))
         
-        # Pour l'instant, on calcule directement (plus tard ce sera le Consumer)
-        if operator == '+':
-            result = operand1 + operand2
-        elif operator == '-':
-            result = operand1 - operand2
-        elif operator == '*':
-            result = operand1 * operand2
-        elif operator == '/':
-            if operand2 == 0:
-                result = {"error": "Division by zero"}
-            else:
-                result = operand1 / operand2
-        
-        # Stockage du résultat dans Redis
-        r.set(f"result:{operation_id}", json.dumps(result))
-        
-        # Mise à jour du statut
-        operation_data["status"] = "completed"
-        r.set(f"operation:{operation_id}", json.dumps(operation_data))
+        # NOUVEAU : Envoie le message dans RabbitMQ
+        connection, channel = get_rabbitmq_connection()
+        if channel:
+            message = {
+                "id": operation_id,
+                "operator": operator,
+                "operand1": operand1,
+                "operand2": operand2
+            }
+            
+            channel.basic_publish(
+                exchange='',
+                routing_key='calculations',
+                body=json.dumps(message),
+                properties=pika.BasicProperties(
+                    delivery_mode=2,  # Message persistant
+                )
+            )
+            connection.close()
+            print(f"📨 Message envoyé dans RabbitMQ: {operation_id}")
+        else:
+            return jsonify({"error": "RabbitMQ not available"}), 503
         
         return jsonify({
             "id": operation_id,
             "message": "Operation submitted successfully",
-            "status": "completed"
+            "status": "pending"  # ⚠️ Maintenant "pending" au lieu de "completed"
         }), 201
         
     except Exception as e:
+        print(f"❌ Erreur: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/result/<operation_id>', methods=['GET'])
@@ -146,9 +167,7 @@ def list_operations():
         return jsonify({"error": "Redis not available"}), 503
     
     try:
-        # Récupérer toutes les clés d'opérations
         operation_keys = r.keys("operation:*")
-        
         operations = {}
         for key in operation_keys:
             operation_id = key.replace("operation:", "")
@@ -167,7 +186,7 @@ def list_operations():
 @app.route('/api/health', methods=['GET'])
 def health():
     """
-    Endpoint de santé pour vérifier le statut de l'API et Redis
+    Endpoint de santé
     """
     redis_status = "healthy"
     try:
@@ -178,9 +197,20 @@ def health():
     except:
         redis_status = "error"
     
+    rabbitmq_status = "healthy"
+    try:
+        conn, ch = get_rabbitmq_connection()
+        if conn:
+            conn.close()
+        else:
+            rabbitmq_status = "disconnected"
+    except:
+        rabbitmq_status = "error"
+    
     return jsonify({
         "api": "healthy",
-        "redis": redis_status
+        "redis": redis_status,
+        "rabbitmq": rabbitmq_status
     }), 200
 
 if __name__ == '__main__':
