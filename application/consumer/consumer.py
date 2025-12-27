@@ -3,11 +3,17 @@ import redis
 import json
 import time
 import sys
+import os
+
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
+RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
 
 # Connexion à Redis
 print("🔄 Connexion à Redis...")
 try:
-    r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+    r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
     r.ping()
     print("✅ Connecté à Redis")
 except redis.ConnectionError as e:
@@ -22,7 +28,7 @@ retry_count = 0
 while retry_count < max_retries:
     try:
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters('localhost', heartbeat=600)
+            pika.ConnectionParameters(RABBITMQ_HOST, RABBITMQ_PORT, heartbeat=600)
         )
         channel = connection.channel()
         channel.queue_declare(queue='calculations', durable=True)

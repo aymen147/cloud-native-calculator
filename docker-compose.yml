@@ -1,0 +1,85 @@
+﻿version: '3.8'
+
+services:
+  # Redis - Base de données
+  redis:
+    image: redis:latest
+    container_name: calculator-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - calculator-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # RabbitMQ - File de messages
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: calculator-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - calculator-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    image: calculator-backend:latest
+    container_name: calculator-backend
+    ports:
+      - "5000:5000"
+    networks:
+      - calculator-network
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Consumer - Service de calcul
+  consumer:
+    image: calculator-consumer:latest
+    container_name: calculator-consumer
+    networks:
+      - calculator-network
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Frontend - Interface utilisateur
+  frontend:
+    image: calculator-frontend:latest
+    container_name: calculator-frontend
+    ports:
+      - "8080:80"
+    networks:
+      - calculator-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  calculator-network:
+    driver: bridge
