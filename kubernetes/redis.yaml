@@ -1,0 +1,51 @@
+---
+# ReplicaSet pour Redis
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: redis-replicaset
+  namespace: aymenbenchaabane
+  labels:
+    app: redis
+    tier: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: database
+    spec:
+      containers:
+      - name: redis
+        image: redis:latest
+        ports:
+        - containerPort: 6379
+          name: redis
+        resources:
+          requests:
+            cpu: "4m"
+            memory: "32Mi"
+        env:
+        - name: REDIS_PASSWORD
+          value: ""  # Pas de password pour simplifier
+---
+# Service pour Redis
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: aymenbenchaabane
+  labels:
+    app: redis
+spec:
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+  type: ClusterIP

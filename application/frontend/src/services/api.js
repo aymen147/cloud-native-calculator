@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000'
+const API_URL = ''
 
 export async function submitOperation(operator, operand1, operand2) {
   const response = await fetch(`${API_URL}/api/operation`, {

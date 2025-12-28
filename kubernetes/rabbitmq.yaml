@@ -1,0 +1,60 @@
+---
+# ReplicaSet pour RabbitMQ
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rabbitmq-replicaset
+  namespace: aymenbenchaabane
+  labels:
+    app: rabbitmq
+    tier: messaging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        tier: messaging
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3.12-management
+        ports:
+        - containerPort: 5672
+          name: amqp
+        - containerPort: 15672
+          name: management
+        resources:
+          requests:
+            cpu: "4m"
+            memory: "32Mi"
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "guest"
+        - name: RABBITMQ_DEFAULT_PASS
+          value: "guest"
+---
+# Service pour RabbitMQ
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+  namespace: aymenbenchaabane
+  labels:
+    app: rabbitmq
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - port: 5672
+    targetPort: 5672
+    protocol: TCP
+    name: amqp
+  - port: 15672
+    targetPort: 15672
+    protocol: TCP
+    name: management
+  type: ClusterIP

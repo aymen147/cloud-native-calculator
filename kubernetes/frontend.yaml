@@ -1,0 +1,49 @@
+---
+# ReplicaSet pour le Frontend
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend-replicaset
+  namespace: aymenbenchaabane
+  labels:
+    app: frontend
+    tier: presentation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+        tier: presentation
+    spec:
+      containers:
+      - name: frontend
+        image: calculator-frontend:latest
+        imagePullPolicy: Never  # Pour tests locaux
+        ports:
+        - containerPort: 80
+          name: http
+        resources:
+          requests:
+            cpu: "4m"
+            memory: "32Mi"
+---
+# Service pour le Frontend
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: aymenbenchaabane
+  labels:
+    app: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: ClusterIP

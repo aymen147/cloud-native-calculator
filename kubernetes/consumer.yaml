@@ -1,0 +1,38 @@
+---
+# ReplicaSet pour le Consumer
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: consumer-replicaset
+  namespace: aymenbenchaabane
+  labels:
+    app: consumer
+    tier: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+        tier: worker
+    spec:
+      containers:
+      - name: consumer
+        image: calculator-consumer:latest
+        imagePullPolicy: Never  # Pour tests locaux
+        resources:
+          requests:
+            cpu: "4m"
+            memory: "32Mi"
+        env:
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: RABBITMQ_HOST
+          value: "rabbitmq-service"
+        - name: RABBITMQ_PORT
+          value: "5672"

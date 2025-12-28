@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aymenbenchaabane
+  labels:
+    name: aymenbenchaabane
+    environment: production
+    project: calculator

@@ -1,0 +1,60 @@
+---
+# ReplicaSet pour le Backend
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: backend-replicaset
+  namespace: aymenbenchaabane
+  labels:
+    app: backend
+    tier: application
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+        tier: application
+    spec:
+      containers:
+      - name: backend
+        image: calculator-backend:latest
+        imagePullPolicy: Never  # Pour tests locaux
+        ports:
+        - containerPort: 5000
+          name: http
+        resources:
+          requests:
+            cpu: "4m"
+            memory: "32Mi"
+        env:
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: RABBITMQ_HOST
+          value: "rabbitmq-service"
+        - name: RABBITMQ_PORT
+          value: "5672"
+        - name: FLASK_ENV
+          value: "production"
+---
+# Service pour le Backend
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: aymenbenchaabane
+  labels:
+    app: backend
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+  type: ClusterIP
