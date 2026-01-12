@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "polytech-dijon",
+  "private_key_id": "a06f626b8737ffd64c260efce9c363dcd47163bc",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC8UGigM7/BuT8R\nFMUT6DXNjdCZeDdJxWcnfPGso69shYGoKubrt7TbLdFq/gCPSHpinKnH+ghac/Sa\nh7k3S/zZEMbIxlB+tKuDZCE0VY2WBiRWmheHkOjjGX7rFrchYrlrWmvu2glmOB0J\nSUCZeSMKQbIKmpheoDCRWLaDCbDIiON/svl5U4pgqyLktOQ+rW4PTR0/dtMKbM2C\nZ2ojcMA/6IeysLrhKVzZ+trJ5YZ5+GJ2bp1CHoa7MAiPGrd5DFoAiH5XlhZKLK9g\n7IuVKPZwhqV0XTaU4ckFAQ/MLtjAmvrIBXadO7irR1ZrGenfKYFLXwt5ES69PfC5\nGn2eFp0zAgMBAAECggEAG85PtKAPh35f9pi3hPn7v89Z5t9eYpE4axdC5DgDNiX8\ngCVdlZ65oMeCLac10/Jix97UHwgnZZvLmWnDCow42KBmiczmo97vmGYXlQ+w6V8c\nzIDSSp02Fhp0qCfhgJeAQ37Fgy5ExwgwGWfslvzRFLmgnXo4V3iV01BjGrQ6m1GC\nRHLSs+Jjpwxe0ryq48OFeifAiGnpOdtRagppFgP17C/rch1Fia38inO4dneuQNpy\n6kIkLcRbweIrTnSLkcxCIqGfAEYi1uaL7LV7bHHe/457yj8G3kC0fKW+5j244pWy\n/+qpwFkqhHvk8tsINYjd0t0ysavw4g+uCHOnhRyqeQKBgQDmHUYWJJvupp8tluv+\nq+zUXx/f9lwoah2sHxt0/Durm4hq20PANOb41OkAxwmwOHxPhxe6febZtoYPau7a\nanvUj575aXw8qEVH0dkyFMZSHaTG0AM23UTHuTa7ft3xCHWK94I6e82saHlJyXLQ\noCFXJ/XZRlmcIRXeg23ErTXoVwKBgQDRf2P+zGUVJCevl+x2IrTtc53I9fjyUvEa\noetKI99y+ZAjIwN86NpJV5MH9SbKNHNS20/WXJuHE3r8KsMutnnFrOraCXOHHrS4\n7RWD77l0KlCZVqIVlnNfYqQPyQb2J8TIeT+L8YXjDdvLUmwM7g1/uccRejTtAUAr\nLeD/SiFYhQKBgDeGvNC/CLlvj11q24taZQ1h3skmI1rFMF/GKdPywVtJboOKYTDS\nEyHcDlVXsejJ2IVALeOcWcYTGwpBXV1q8HJ8LXo1j/r7B6yq4GQLS0epS4eFziDB\nB8XB1YkstdVhmytrSgtesGR32TyK1Z+t5B2p0NMa/KiF+0b0I9qfiTCFAoGBAJ84\nk7YmgDjGJsdkztmmXR4O/f+rOk5pzUbxgxLxGrWWiP67cL4xdx3AykWFA7swi+mQ\nNyhzb90EaDdZBMju9LPRTRjzj/NE2hOmVPDWdHueYW15E20W0I7ROGGq5niVFxFK\nXYqtwJUlhkQMW4SkNGw7tNlKqQjsJ2npz5QXMirFAoGAAktPxO/ZruiRacHT4Vl/\nH312Nj5mwAHjcwyw3J04JBYRADd4Knkv1klQ60VIZGQGkNJjp3aIN75793hWC/ue\nh/LiZ9YYBcf+Ulm1bQXYSjUwtwV13Inr9q4IJXo59abeZYbBaVzOiFkJc7NkiRsO\nf/Nc5r5IPRmje3SVxvV6Tvg=\n-----END PRIVATE KEY-----\n",
+  "client_email": "student@polytech-dijon.iam.gserviceaccount.com",
+  "client_id": "113843308755020046189",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/student%40polytech-dijon.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
