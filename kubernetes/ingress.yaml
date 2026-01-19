@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: localhost
+  - host: calculatrice-aymenbenchaabane.polytech-dijon.kiowy.net
     http:
       paths:
       - path: /api
